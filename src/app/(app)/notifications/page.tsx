@@ -40,7 +40,7 @@ export default function NotificationsPage() {
   const markAllRead = () => setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
 
   return (
-    <AppShell title="الإشعارات" subtitle="كل جديد في المنصة — من غير إزعاج، وانت اللي بتتحكم فيها من الإعدادات." active="profile">
+    <AppShell chrome={false} title="الإشعارات" subtitle="كل جديد في المنصة — من غير إزعاج، وانت اللي بتتحكم فيها من الإعدادات." active="profile">
       <div className="mb-5 flex flex-wrap items-center gap-2">
         <Chip tone="blue">
           <Bell className="h-3.5 w-3.5" /> {unreadCount} غير مقروءة

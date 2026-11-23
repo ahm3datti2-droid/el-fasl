@@ -120,18 +120,33 @@ export function AppShell({
   subtitle,
   active,
   children,
+  demo = true,
+  chrome = true,
 }: {
   title: string;
   subtitle?: string;
   active: string;
   children: ReactNode;
+  /** false = real Supabase session: never show the demo/guest banner. */
+  demo?: boolean;
+  /** false = embedded inside the main AppShell: skip the duplicate header/nav. */
+  chrome?: boolean;
 }) {
   const [demoRole, setDemoRoleState] = useState<DemoRole | null>(null);
   const [mounted, setMounted] = useState(false);
+  const [hasRealSession, setHasRealSession] = useState(false);
 
   useEffect(() => {
     setMounted(true);
     setDemoRoleState(readDemoRole());
+    // A Supabase session cookie means a real account — never a demo guest,
+    // even if a server page forgot to pass demo={false}.
+    setHasRealSession(
+      document.cookie.split(";").some((c) => {
+        const name = c.trim().split("=")[0];
+        return name.startsWith("sb-") && name.includes("-auth-token");
+      }),
+    );
   }, []);
 
   const enterGuestMode = () => {
@@ -143,6 +158,7 @@ export function AppShell({
   return (
     <div dir="rtl" lang="ar" style={{ fontFamily: "'Cairo', system-ui, -apple-system, sans-serif" }} className="min-h-screen bg-[#F5F7FB] text-[#101828]">
       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" />
+      {chrome && (
       <header className="sticky top-0 z-40 border-b border-gray-100 bg-white/95 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
           <Link href="/dashboard" className="flex items-center gap-2">
@@ -172,8 +188,9 @@ export function AppShell({
           </div>
         </div>
       </header>
+      )}
 
-      {mounted && !demoRole && (
+      {mounted && demo && !demoRole && !hasRealSession && (
         <div className="border-b border-amber-200 bg-amber-50 px-4 py-2.5 text-center text-sm font-bold text-amber-800">
           أنت في وضع العرض التجريبي — المحتوى تجريبي حتى تفعيل حساب Supabase.{" "}
           <button onClick={enterGuestMode} className="mr-1 rounded-full bg-amber-600 px-3 py-1 text-xs font-black text-white hover:bg-amber-700">
@@ -182,14 +199,25 @@ export function AppShell({
         </div>
       )}
 
-      <main className="mx-auto w-full max-w-6xl px-4 pb-28 pt-6 md:pb-12">
-        <div className="mb-5">
-          <h1 className="text-2xl font-black md:text-3xl">{title}</h1>
-          {subtitle && <p className="mt-1 text-sm font-semibold text-gray-500 md:text-base">{subtitle}</p>}
+      {chrome ? (
+        <main className="mx-auto w-full max-w-6xl px-4 pb-28 pt-6 md:pb-12">
+          <div className="mb-5">
+            <h1 className="text-2xl font-black md:text-3xl">{title}</h1>
+            {subtitle && <p className="mt-1 text-sm font-semibold text-gray-500 md:text-base">{subtitle}</p>}
+          </div>
+          {children}
+        </main>
+      ) : (
+        <div>
+          <div className="mb-5">
+            <h1 className="text-2xl font-black md:text-3xl">{title}</h1>
+            {subtitle && <p className="mt-1 text-sm font-semibold text-gray-500 md:text-base">{subtitle}</p>}
+          </div>
+          {children}
         </div>
-        {children}
-      </main>
+      )}
 
+      {chrome && (
       <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-gray-100 bg-white/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden">
         <div className="grid grid-cols-5">
           {NAV_ITEMS.map((item) => {
@@ -204,6 +232,7 @@ export function AppShell({
           })}
         </div>
       </nav>
+      )}
     </div>
   );
 }
@@ -250,10 +279,10 @@ export function StatCard({ label, value, hint, icon, color }: { label: string; v
   );
 }
 
-export function AdminShell({ title, subtitle, children }: { title: string; subtitle?: string; children: ReactNode }) {
+export function AdminShell({ title, subtitle, children, demo = true }: { title: string; subtitle?: string; children: ReactNode; /** false = real Supabase session: hide the demo notice. */ demo?: boolean }) {
   return (
-    <AppShell title={title} subtitle={subtitle} active="admin">
-      <DemoNote />
+    <AppShell title={title} subtitle={subtitle} active="admin" demo={demo} chrome={false}>
+      {demo && <DemoNote />}
       <div className="mb-5 flex flex-wrap gap-2">
         {[
           { href: "/admin", label: "نظرة عامة" },

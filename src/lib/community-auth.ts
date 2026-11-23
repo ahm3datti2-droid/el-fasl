@@ -64,6 +64,15 @@ export async function isAuthenticated(): Promise<boolean> {
   return (await getServerRole()) !== null;
 }
 
+/**
+ * True only while the app runs WITHOUT Supabase configured (demo mode).
+ * Once Supabase is live every session is a real account, so demo UI
+ * (guest banner, DemoNote, seed-data notices) must stay hidden.
+ */
+export async function isDemoSession(): Promise<boolean> {
+  return !isSupabaseConfigured();
+}
+
 export async function isAdmin(): Promise<boolean> {
   return (await getServerRole()) === "admin";
 }

@@ -77,7 +77,7 @@ export default function ProfilePage() {
   };
 
   return (
-    <AppShell title="ملفي الشخصي" subtitle="بياناتك، مستواك، شاراتك، ومشاركاتك في المجتمع." active="profile">
+    <AppShell chrome={false} title="ملفي الشخصي" subtitle="بياناتك، مستواك، شاراتك، ومشاركاتك في المجتمع." active="profile">
       {msg && <div className="mb-4 rounded-2xl bg-green-50 px-4 py-3 text-sm font-bold text-green-700">{msg}</div>}
 
       {/* بطاقة الهوية */}

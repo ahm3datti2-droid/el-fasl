@@ -178,7 +178,7 @@ export default function TeacherUnfilteredPage() {
   };
 
   return (
-    <AppShell title="فضفضة مدرس" subtitle="مساحة آمنة تشارك فيها مواقفك من الفصل — باسمك أو كمجهول، من غير أحكام." active="community">
+    <AppShell chrome={false} title="فضفضة مدرس" subtitle="مساحة آمنة تشارك فيها مواقفك من الفصل — باسمك أو كمجهول، من غير أحكام." active="community">
       {msg && <div className="mb-4 rounded-2xl bg-green-50 px-4 py-3 text-sm font-bold text-green-700">{msg}</div>}
       {authError && (
         <div className="mb-4 flex items-center justify-between gap-2 rounded-2xl bg-red-50 px-4 py-3 text-sm font-bold text-red-600">

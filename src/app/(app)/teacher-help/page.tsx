@@ -190,7 +190,7 @@ export default function TeacherHelpPage() {
   };
 
   return (
-    <AppShell title="مدرس يساعد مدرس" subtitle="محتاج فكرة شرح أو حل مشكلة؟ اسأل المجتمع — وفيه مدرسين مستعدين يساعدوك." active="community">
+    <AppShell chrome={false} title="مدرس يساعد مدرس" subtitle="محتاج فكرة شرح أو حل مشكلة؟ اسأل المجتمع — وفيه مدرسين مستعدين يساعدوك." active="community">
       {msg && <div className="mb-4 rounded-2xl bg-green-50 px-4 py-3 text-sm font-bold text-green-700">{msg}</div>}
       {authError && (
         <div className="mb-4 flex items-center justify-between gap-2 rounded-2xl bg-red-50 px-4 py-3 text-sm font-bold text-red-600">

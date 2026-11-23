@@ -90,7 +90,7 @@ export default function SettingsPage() {
   };
 
   return (
-    <AppShell title="الإعدادات" subtitle="بياناتك، إشعاراتك، والمظهر — كل حاجة في مكان واحد." active="profile">
+    <AppShell chrome={false} title="الإعدادات" subtitle="بياناتك، إشعاراتك، والمظهر — كل حاجة في مكان واحد." active="profile">
       {msg && <div className="mb-4 rounded-2xl bg-green-50 px-4 py-3 text-sm font-bold text-green-700">{msg}</div>}
 
       {/* الملف الشخصي */}

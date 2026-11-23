@@ -217,7 +217,7 @@ export default function IdeasPage() {
   };
 
   return (
-    <AppShell title="مصنع الأفكار" subtitle="أفكار تربوية صغيرة وعملية من مدرسين زيك — جرّبها في حصتك بكرة." active="community">
+    <AppShell chrome={false} title="مصنع الأفكار" subtitle="أفكار تربوية صغيرة وعملية من مدرسين زيك — جرّبها في حصتك بكرة." active="community">
       {msg && (
         <div className="mb-4 rounded-2xl bg-green-50 px-4 py-3 text-sm font-bold text-green-700">{msg}</div>
       )}

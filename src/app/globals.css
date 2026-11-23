@@ -1,0 +1,39 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-navy: #101828;
+  --color-navy-light: #1d2939;
+  --color-electric: #4568ff;
+  --color-electric-dark: #3451d6;
+  --color-accent: #7c5cfc;
+  --color-soft: #f5f7fb;
+  --font-sans: var(--font-cairo), var(--font-plex), ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-soft font-sans text-navy antialiased dark:bg-[#0b1220] dark:text-slate-100;
+  }
+  ::selection {
+    @apply bg-electric/20;
+  }
+}
+
+/* Thin, unobtrusive scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+*::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+*::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 999px;
+}

@@ -235,13 +235,13 @@ export function Chip({ children, tone = "gray" }: { children: ReactNode; tone?: 
   return <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-bold ${tones[tone]}`}>{children}</span>;
 }
 
-export function StatCard({ label, value, hint, icon: Icon, color }: { label: string; value: string; hint?: string; icon: typeof Users; color: string }) {
+export function StatCard({ label, value, hint, icon, color }: { label: string; value: string; hint?: string; icon: ReactNode; color: string }) {
   return (
     <div className="rounded-3xl bg-white p-4 shadow-sm">
       <div className="flex items-center justify-between">
         <span className="text-sm font-bold text-gray-500">{label}</span>
         <span className={`flex h-9 w-9 items-center justify-center rounded-xl text-white ${color}`}>
-          <Icon className="h-5 w-5" />
+          {icon}
         </span>
       </div>
       <p className="mt-2 text-2xl font-black">{value}</p>

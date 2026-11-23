@@ -25,12 +25,12 @@ export default async function AdminPage() {
   return (
     <AdminShell title="لوحة الإدارة" subtitle="نظرة عامة على المنصة — المستخدمون، المحتوى، البلاغات، والتحديات.">
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
-        <StatCard label="إجمالي المستخدمين" value={ADMIN_STATS.totalUsers.toLocaleString("ar-EG")} hint={`+${ADMIN_STATS.newUsersThisWeek} هذا الأسبوع`} icon={Users} color="bg-[#4568FF]" />
-        <StatCard label="نشط اليوم" value={ADMIN_STATS.activeToday.toLocaleString("ar-EG")} hint="مستخدم سجّل دخول اليوم" icon={Zap} color="bg-green-500" />
-        <StatCard label="الأفكار المنشورة" value={ADMIN_STATS.totalIdeas.toLocaleString("ar-EG")} hint="في مصنع الأفكار" icon={Lightbulb} color="bg-amber-500" />
-        <StatCard label="منشورات فضفضة" value={ADMIN_STATS.totalPosts.toLocaleString("ar-EG")} hint="مواقف وتجارب" icon={MessageCircle} color="bg-[#7C5CFC]" />
-        <StatCard label="بلاغات بانتظار المراجعة" value={ADMIN_STATS.pendingReports.toLocaleString("ar-EG")} hint="راجعها من صفحة البلاغات" icon={Flag} color="bg-red-500" />
-        <StatCard label="تحديات نشطة" value={ADMIN_STATS.activeChallenges.toLocaleString("ar-EG")} hint="تحدي اليوم + تحدي الأسبوع" icon={Trophy} color="bg-[#101828]" />
+        <StatCard label="إجمالي المستخدمين" value={ADMIN_STATS.totalUsers.toLocaleString("ar-EG")} hint={`+${ADMIN_STATS.newUsersThisWeek} هذا الأسبوع`} icon={<Users className="h-5 w-5" />} color="bg-[#4568FF]" />
+        <StatCard label="نشط اليوم" value={ADMIN_STATS.activeToday.toLocaleString("ar-EG")} hint="مستخدم سجّل دخول اليوم" icon={<Zap className="h-5 w-5" />} color="bg-green-500" />
+        <StatCard label="الأفكار المنشورة" value={ADMIN_STATS.totalIdeas.toLocaleString("ar-EG")} hint="في مصنع الأفكار" icon={<Lightbulb className="h-5 w-5" />} color="bg-amber-500" />
+        <StatCard label="منشورات فضفضة" value={ADMIN_STATS.totalPosts.toLocaleString("ar-EG")} hint="مواقف وتجارب" icon={<MessageCircle className="h-5 w-5" />} color="bg-[#7C5CFC]" />
+        <StatCard label="بلاغات بانتظار المراجعة" value={ADMIN_STATS.pendingReports.toLocaleString("ar-EG")} hint="راجعها من صفحة البلاغات" icon={<Flag className="h-5 w-5" />} color="bg-red-500" />
+        <StatCard label="تحديات نشطة" value={ADMIN_STATS.activeChallenges.toLocaleString("ar-EG")} hint="تحدي اليوم + تحدي الأسبوع" icon={<Trophy className="h-5 w-5" />} color="bg-[#101828]" />
       </div>
 
       <div className="mt-5 grid gap-4 md:grid-cols-2">

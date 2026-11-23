@@ -5,20 +5,10 @@
 -- relevant, ownership or the admin role. XP is awarded server-side only.
 -- ============================================================================
 
--- ---------- helpers ----------------------------------------------------------
-
-create or replace function public.is_admin() returns boolean
-language sql stable security definer as $$
-  select exists (select 1 from public.profiles where id = auth.uid() and role = 'admin');
-$$;
-
-create or replace function public.is_moderator_or_admin() returns boolean
-language sql stable security definer as $$
-  select exists (
-    select 1 from public.profiles
-    where id = auth.uid() and role in ('moderator', 'admin')
-  );
-$$;
+-- NOTE (2026-11-23): the is_admin() / is_moderator_or_admin() helpers are
+-- defined AFTER the profiles table below — SQL-language functions are
+-- validated at creation time, so defining them before profiles exists fails
+-- on a fresh database (ERROR 42P01). Keep this order.
 
 create or replace function public.set_updated_at() returns trigger
 language plpgsql as $$
@@ -50,6 +40,20 @@ create index if not exists profiles_xp_idx on public.profiles (xp desc);
 drop trigger if exists profiles_updated_at on public.profiles;
 create trigger profiles_updated_at before update on public.profiles
   for each row execute function public.set_updated_at();
+
+-- Role helpers (must come AFTER the profiles table — see note above).
+create or replace function public.is_admin() returns boolean
+language sql stable security definer as $$
+  select exists (select 1 from public.profiles where id = auth.uid() and role = 'admin');
+$$;
+
+create or replace function public.is_moderator_or_admin() returns boolean
+language sql stable security definer as $$
+  select exists (
+    select 1 from public.profiles
+    where id = auth.uid() and role in ('moderator', 'admin')
+  );
+$$;
 
 -- Auto-create a profile row whenever a user signs up (reads raw_user_meta_data).
 create or replace function public.handle_new_user() returns trigger

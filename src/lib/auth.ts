@@ -196,7 +196,14 @@ export async function getSessionUser(): Promise<SessionUser | null> {
     }
   }
 
-  const demo = parseDemoSession(cookieStore.get(DEMO_COOKIE)?.value);
-  if (demo) return demoSessionToUser(demo);
+  // Demo sessions are ONLY valid while Supabase is not configured.
+  // Once the real auth is live, a stale demo cookie from before the link
+  // must not keep working (it would show the demo banner forever and let
+  // anyone with the cookie bypass Supabase auth entirely).
+  if (!isSupabaseConfigured()) {
+    const demo = parseDemoSession(cookieStore.get(DEMO_COOKIE)?.value);
+    if (demo) return demoSessionToUser(demo);
+  }
+
   return null;
 }

@@ -5,7 +5,8 @@
 // session server-side, so the proxy is a first line of defence, not the only one.
 import { NextResponse, type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/proxy";
-import { parseDemoSession } from "@/lib/demo";
+import { isSupabaseConfigured } from "@/lib/supabase/client";
+import { parseDemoSession, DEMO_COOKIE } from "@/lib/demo";
 
 const PROTECTED_PREFIXES = [
   "/dashboard",
@@ -46,13 +47,19 @@ export async function proxy(request: NextRequest) {
   if (pathname.startsWith("/api/")) return NextResponse.next();
 
   const { response, user, supabase } = await updateSession(request);
-  const demo = parseDemoSession(request.cookies.get("el-fasl-demo")?.value);
+  // Demo cookie is only honoured while Supabase is NOT configured. Once the
+  // real auth is live, a stale demo cookie must not authenticate anyone.
+  const demo = isSupabaseConfigured()
+    ? null
+    : parseDemoSession(request.cookies.get(DEMO_COOKIE)?.value);
   const authed = Boolean(user) || Boolean(demo);
 
   if (isProtected(pathname) && !authed) {
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("next", pathname);
     const redirect = NextResponse.redirect(loginUrl);
+    // Drop any stale demo cookie so the browser stops sending it.
+    if (isSupabaseConfigured()) redirect.cookies.delete(DEMO_COOKIE);
     copySetCookies(response, redirect);
     return redirect;
   }

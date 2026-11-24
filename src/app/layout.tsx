@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Cairo, IBM_Plex_Sans_Arabic } from "next/font/google";
 import { cookies } from "next/headers";
 import "./globals.css";
+import VisitTracker from "@/components/VisitTracker";
 
 const cairo = Cairo({
   variable: "--font-cairo",
@@ -61,7 +62,10 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       dir="rtl"
       className={`${cairo.variable} ${plex.variable} h-full ${theme === "dark" ? "dark" : ""}`}
     >
-      <body className="min-h-full">{children}</body>
+      <body className="min-h-full">
+        <VisitTracker />
+        {children}
+      </body>
     </html>
   );
 }

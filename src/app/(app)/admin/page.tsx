@@ -6,7 +6,9 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import {
   ChartColumn,
+  Eye,
   Flag,
+  Globe,
   Lightbulb,
   MessageCircle,
   Trophy,
@@ -46,6 +48,8 @@ type LiveStats = {
   activeChallenges: number;
   xpGivenThisWeek: number;
   newUsersThisWeek: number;
+  visitorsToday: number;
+  visitorsTotal: number;
   topSubjects: { subject: string; count: number }[];
   weeklySignups: number[];
   weekLabels: string[];
@@ -91,6 +95,21 @@ async function loadLiveStats(): Promise<LiveStats | null> {
     if (r.error) throw new Error(r.error.message);
   }
 
+  // Site visits: non-fatal — if the site_visits table was never migrated,
+  // visitors stay 0 instead of killing the whole live dashboard.
+  let visitRows: { visitor_id: string; day: string }[] = [];
+  try {
+    const v = await supabase.from("site_visits").select("visitor_id, day").limit(10000);
+    if (!v.error) visitRows = (v.data ?? []) as { visitor_id: string; day: string }[];
+  } catch {
+    visitRows = [];
+  }
+  const todayDay = new Date().toISOString().slice(0, 10);
+  const visitorsToday = new Set(
+    visitRows.filter((r) => r.day === todayDay).map((r) => r.visitor_id),
+  ).size;
+  const visitorsTotal = new Set(visitRows.map((r) => r.visitor_id)).size;
+
   // Weekly signups bucketed per day (last 7 days, oldest first).
   const weeklySignups = Array<number>(7).fill(0);
   const weekLabels: string[] = [];
@@ -134,6 +153,8 @@ async function loadLiveStats(): Promise<LiveStats | null> {
     activeChallenges: challenges.count ?? 0,
     xpGivenThisWeek,
     newUsersThisWeek: (signups.data ?? []).length,
+    visitorsToday,
+    visitorsTotal,
     topSubjects,
     weeklySignups,
     weekLabels,
@@ -154,6 +175,8 @@ export default async function AdminPage() {
     activeChallenges: ADMIN_STATS.activeChallenges,
     xpGivenThisWeek: ADMIN_STATS.xpGivenThisWeek,
     newUsersThisWeek: ADMIN_STATS.newUsersThisWeek,
+    visitorsToday: 0,
+    visitorsTotal: 0,
     topSubjects: ADMIN_STATS.topSubjects,
     weeklySignups: ADMIN_STATS.weeklySignups,
     weekLabels: ["السبت", "الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة"],
@@ -208,6 +231,8 @@ export default async function AdminPage() {
         <StatCard label="منشورات فضفضة" value={stats.totalPosts.toLocaleString("ar-EG")} hint="مواقف وتجارب" icon={<MessageCircle className="h-5 w-5" />} color="bg-[#7C5CFC]" />
         <StatCard label="بلاغات بانتظار المراجعة" value={stats.pendingReports.toLocaleString("ar-EG")} hint="راجعها من صفحة البلاغات" icon={<Flag className="h-5 w-5" />} color="bg-red-500" />
         <StatCard label="تحديات نشطة" value={stats.activeChallenges.toLocaleString("ar-EG")} hint="تحدي اليوم + تحدي الأسبوع" icon={<Trophy className="h-5 w-5" />} color="bg-[#101828]" />
+        <StatCard label="زوار الموقع اليوم" value={stats.visitorsToday.toLocaleString("ar-EG")} hint="زائر مختلف اليوم" icon={<Eye className="h-5 w-5" />} color="bg-teal-500" />
+        <StatCard label="إجمالي زوار الموقع" value={stats.visitorsTotal.toLocaleString("ar-EG")} hint="زائر مختلف منذ بدء التتبع" icon={<Globe className="h-5 w-5" />} color="bg-cyan-600" />
       </div>
 
       <div className="mt-5 grid gap-4 md:grid-cols-2">

@@ -534,3 +534,30 @@ create policy "reports_update_mod" on public.reports for update to authenticated
 -- Explicit grants: authenticated users only. The anon role gets nothing.
 revoke all on all tables in schema public from anon;
 grant select, insert, update, delete on all tables in schema public to authenticated;
+
+-- ============================================================================
+-- Site visits — real visitor counting for the admin dashboard (added 2026-11-24).
+-- One row per visitor per day (unique visitor_id + day); the tracker upserts
+-- it, so repeat page views by the same visitor on the same day add nothing.
+-- EXCEPTION to the "anon gets nothing" rule above: anon may ONLY insert
+-- rows here (no select/update/delete) so anonymous landing-page visitors are
+-- counted too. Reads are admin-only. Abuse surface is one insert per
+-- visitor per day; the table holds no personal data (random visitor id only).
+-- ============================================================================
+create table if not exists public.site_visits (
+  id uuid primary key default gen_random_uuid(),
+  visitor_id text not null,
+  path text not null default '/',
+  day date not null default current_date,
+  created_at timestamptz not null default now(),
+  unique (visitor_id, day)
+);
+create index if not exists site_visits_day_idx on public.site_visits (day desc, created_at desc);
+
+alter table public.site_visits enable row level security;
+drop policy if exists "site_visits_insert_any" on public.site_visits;
+create policy "site_visits_insert_any" on public.site_visits for insert to anon, authenticated with check (true);
+drop policy if exists "site_visits_select_admin" on public.site_visits;
+create policy "site_visits_select_admin" on public.site_visits for select to authenticated using (public.is_admin());
+grant insert on public.site_visits to anon;
+grant select, insert on public.site_visits to authenticated;

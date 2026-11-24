@@ -29,7 +29,10 @@ export async function POST(req: Request) {
         { visitor_id: body.visitorId, path: body.path, day },
         { onConflict: "visitor_id,day" },
       );
-    if (error) return NextResponse.json({ ok: false, reason: "db" }, { status: 500 });
+    // TEMP DEBUG (2026-11-24): surface the DB error while diagnosing why
+    // live inserts fail; remove `detail` before calling this fixed.
+    if (error)
+      return NextResponse.json({ ok: false, reason: "db", detail: error.message }, { status: 500 });
     return NextResponse.json({ ok: true });
   } catch {
     return NextResponse.json({ ok: false }, { status: 400 });
